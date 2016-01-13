@@ -6,9 +6,7 @@
 (function(){
 	'use strict';
 
-	var MIN_WORLD_WIDTH = 6,
-		RUNNING_TIME = 30000,
-		inputField = document.getElementById('j-input-word'), // input with main word
+	var inputField = document.getElementById('j-input-word'), // input with main word
 		startButton = document.getElementById('j-start'); // start button
 
 	// submit buttons
@@ -23,16 +21,20 @@
 	var textFieldOne = document.getElementById('j-arr-one'),
 		textFieldTwo = document.getElementById('j-arr-two');
 
-	// array with words
-	var arrOne = [],
-		arrTwo = [];
-
 	// timer nodes
 	var timerOne = document.getElementById('j-time-one'),
 		timerTwo = document.getElementById('j-time-two');
 
-	// timers id
-	var timerOneID, timerTwoID;
+	// object with game state
+	var gameState = {
+		MIN_WORLD_WIDTH: 6,
+		RUNNING_TIME: 30000,
+		timerOneID: 0,
+		timerTwoID: 0,
+		firstPlayerWords: [],
+		secondPlayerWords: []
+	};
+
 
 	inputField.addEventListener('keyup', activateButton, false);
 	startButton.addEventListener('click', startGame, false);
@@ -40,16 +42,16 @@
 	buttonAddOne.addEventListener('click', addOne, false);
 	buttonAddTwo.addEventListener('click', addTwo, false);
 
-	initTimer(timerOne, RUNNING_TIME);
-	initTimer(timerTwo, RUNNING_TIME);
+	initTimer(timerOne, gameState.RUNNING_TIME);
+	initTimer(timerTwo, gameState.RUNNING_TIME);
 
 
 	// activate start game button
 	function activateButton(){
 		var currentLength = inputField.value.length;
 
-		//если длина слова в инпуте больше минимальной - делаем активной кнопку
-		if (currentLength >= MIN_WORLD_WIDTH) {
+		// if word length in input more then minimal - make button active
+		if (currentLength >= gameState.MIN_WORLD_WIDTH) {
 			if( !/^[a-zA-Zа-яА-я]+$/.test(inputField.value) ) {
 				alert('Допустимы только буквы');
 				startButton.setAttribute('disabled', 'true');
@@ -59,8 +61,8 @@
 				startButton.removeAttribute('disabled');
 			}
 		}
-		//если длина слова в инпуте больше минимальной - делаем кнопку неактивной
-		if (currentLength < MIN_WORLD_WIDTH) {
+		// id word length in input less that minimal - make button disable
+		if (currentLength < gameState.MIN_WORLD_WIDTH) {
 			startButton.setAttribute('disabled', 'true');
 		}
 
@@ -72,10 +74,10 @@
 		inputField.removeEventListener('keyup', activateButton, false);
 		startButton.setAttribute('disabled', 'true');
 
-		var currentWord = document.getElementById('j-current-world');//показываем слово в нашей псевдо таблице
+		var currentWord = document.getElementById('j-current-world');
 		currentWord.innerHTML = inputField.value.trim();
 
-		showActions();//показываем блок с инпутами добавления слов
+		showActions();// show block with inputs
 		runTimerOne();
 
 	}
@@ -93,7 +95,7 @@
 
 		if(verifyInput(word, inputField.value.trim())){
 
-			if (word.length === 0){//пропуск хода
+			if (word.length === 0){ // skip turn
 				buttonAddTwo.removeAttribute('disabled');
 				buttonAddOne.setAttribute('disabled', 'true');
 				document.getElementById('j-input-two').focus();
@@ -101,11 +103,14 @@
 				return;
 			}
 
-			if (!(arrOne.indexOf(word) === -1 && arrTwo.indexOf(word) === -1)){//если в одном из массивов есть совпадение, возвращаем
+			// if word was used already - return
+			if (!(gameState.firstPlayerWords.indexOf(word) === -1 &&
+				gameState.secondPlayerWords.indexOf(word) === -1))
+			{
 				return;
 			}
 
-			arrOne.push(word);
+			gameState.firstPlayerWords.push(word);
 			buttonAddTwo.removeAttribute('disabled');
 			document.getElementById('j-input-two').focus();
 			buttonAddOne.setAttribute('disabled', 'true');
@@ -129,7 +134,7 @@
 
 		if(verifyInput(word, inputField.value.trim())){
 
-			if (word.length === 0){//пропуск хода
+			if (word.length === 0){// skip turn
 				buttonAddOne.removeAttribute('disabled');
 				buttonAddTwo.setAttribute('disabled', 'true');
 				document.getElementById('j-input-one').focus();
@@ -137,11 +142,13 @@
 				return;
 			}
 
-			if (!(arrOne.indexOf(word) === -1 && arrTwo.indexOf(word) === -1)){//если в одном из массивов есть совпадение, возвращаем
+			// if word was used already - return
+			if (!(gameState.firstPlayerWords.indexOf(word) === -1 &&
+				gameState.secondPlayerWords.indexOf(word) === -1)){
 				return;
 			}
 
-			arrTwo.push(word);
+			gameState.secondPlayerWords.push(word);
 			buttonAddOne.removeAttribute('disabled');
 			document.getElementById('j-input-one').focus();
 			buttonAddTwo.setAttribute('disabled', 'true');
@@ -185,9 +192,9 @@
 
 
 	function initTimer(timerNode, time, progressNode){
-		if (!time){ //выставляем начальное время, когда таймер дотикает
+		if (!time){ //set default time
 			console.log('дотикал!');
-			time = RUNNING_TIME;
+			time = gameState.RUNNING_TIME;
 			progressNode.style.width = '100%';
 		}
 		time = new Date(time).getTime() / 1000;
@@ -209,8 +216,8 @@
 		var decrement = function(){
 			time -= 1000;
 
-			console.log((time / RUNNING_TIME) * 100);
-			progressOne.style.width = time / RUNNING_TIME * 100 + '%';
+			console.log((time / gameState.RUNNING_TIME) * 100);
+			progressOne.style.width = time / gameState.RUNNING_TIME * 100 + '%';
 
 			if (time <= 0) {
 				runTimerTwo();
@@ -229,8 +236,8 @@
 		var decrement = function(){
 			time -= 1000;
 
-			console.log((time / RUNNING_TIME) * 100);
-			progressTwo.style.width = time / RUNNING_TIME * 100 + '%';
+			console.log((time / gameState.RUNNING_TIME) * 100);
+			progressTwo.style.width = time / gameState.RUNNING_TIME * 100 + '%';
 
 			if (time <= 0) {
 				runTimerOne();
@@ -245,18 +252,18 @@
 
 
 	function runTimerOne(){
-		var runTimer = tickTimerOne(RUNNING_TIME);
+		var runTimer = tickTimerOne(gameState.RUNNING_TIME);
 		runTimer();
-		timerOneID = setInterval(runTimer, 1000);
-		clearInterval(timerTwoID);
+		gameState.timerOneID = setInterval(runTimer, 1000);
+		clearInterval(gameState.timerTwoID);
 	}
 
 
 	function runTimerTwo(){
-		var runTimer = tickTimerTwo(RUNNING_TIME);
+		var runTimer = tickTimerTwo(gameState.RUNNING_TIME);
 		runTimer();
-		timerTwoID = setInterval(runTimer, 1000);
-		clearInterval(timerOneID);
+		gameState.timerTwoID = setInterval(runTimer, 1000);
+		clearInterval(gameState.timerOneID);
 	}
 
 
