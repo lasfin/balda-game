@@ -3,30 +3,36 @@
  * @date 08.10.2014
  */
 
-(function(){//весь код в немедленно выполняемой функции, чтобы не засорять глобальную область видимости
+(function(){
 	'use strict';
 
 	var MIN_WORLD_WIDTH = 6,
 		RUNNING_TIME = 30000,
-		inputField = document.getElementById('j-input-word'),//инпут со словом
-		startButton = document.getElementById('j-start'); //кнопка старта
+		inputField = document.getElementById('j-input-word'), // input with main word
+		startButton = document.getElementById('j-start'); // start button
 
-	//кнопки добавления слов
+	// submit buttons
 	var buttonAddOne = document.getElementById('j-push-world-one'),
 		buttonAddTwo = document.getElementById('j-push-world-two');
 
-	//прогресс бары
+	// progress bars
 	var progressOne = document.getElementById('progressOne'),
 		progressTwo = document.getElementById('progressTwo');
 
-	//html блоки с уже заполненными полями
+	// html nodes with words
 	var textFieldOne = document.getElementById('j-arr-one'),
 		textFieldTwo = document.getElementById('j-arr-two');
 
-	//массивы с отгаданными словами
+	// array with words
 	var arrOne = [],
 		arrTwo = [];
 
+	// timer nodes
+	var timerOne = document.getElementById('j-time-one'),
+		timerTwo = document.getElementById('j-time-two');
+
+	// timers id
+	var timerOneID, timerTwoID;
 
 	inputField.addEventListener('keyup', activateButton, false);
 	startButton.addEventListener('click', startGame, false);
@@ -34,29 +40,11 @@
 	buttonAddOne.addEventListener('click', addOne, false);
 	buttonAddTwo.addEventListener('click', addTwo, false);
 
-
-	var timerOne = document.getElementById('j-time-one'),
-		timerTwo = document.getElementById('j-time-two');
-
 	initTimer(timerOne, RUNNING_TIME);
 	initTimer(timerTwo, RUNNING_TIME);
 
-	var timerOneID, timerTwoID;
 
-	function startGame(){
-		inputField.setAttribute('readonly', 'true');//делаем инпут нередактируемым
-		inputField.removeEventListener('keyup', activateButton, false);
-		startButton.setAttribute('disabled', 'true');//делаем кнопку неактивной
-
-		var currentWord = document.getElementById('j-current-world');//показываем слово в нашей псевдо таблице
-		currentWord.innerHTML = inputField.value.trim();
-
-		showActions();//показываем блок с инпутами добавления слов
-		runTimerOne();
-
-	}
-
-	//активация кнопки, начинающей игру
+	// activate start game button
 	function activateButton(){
 		var currentLength = inputField.value.length;
 
@@ -78,7 +66,22 @@
 
 	}
 
-	//показываем блок с инпутами и кнопками добавления слов
+
+	function startGame(){
+		inputField.setAttribute('readonly', 'true');
+		inputField.removeEventListener('keyup', activateButton, false);
+		startButton.setAttribute('disabled', 'true');
+
+		var currentWord = document.getElementById('j-current-world');//показываем слово в нашей псевдо таблице
+		currentWord.innerHTML = inputField.value.trim();
+
+		showActions();//показываем блок с инпутами добавления слов
+		runTimerOne();
+
+	}
+
+
+	// show block with inputs and add buttons
 	function showActions() {
 		var actionsBlock = document.getElementById('j-actions');
 		actionsBlock.style.opacity = 1;
@@ -119,6 +122,7 @@
 
 	}
 
+
 	function addTwo(){
 
 		var word = document.getElementById('j-input-two').value.trim();
@@ -154,6 +158,7 @@
 
 	}
 
+
 	function verifyInput(word, bigword){
 		console.log('verify');
 		word = word.toLowerCase();
@@ -171,11 +176,13 @@
 		return true;
 	}
 
+
 	function changeScore(htmlNode, word){
 		var score = parseInt(htmlNode.innerHTML);
 		score += word.length;
 		htmlNode.innerHTML = score;
 	}
+
 
 	function initTimer(timerNode, time, progressNode){
 		if (!time){ //выставляем начальное время, когда таймер дотикает
@@ -216,6 +223,7 @@
 		return decrement;
 	}
 
+
 	function tickTimerTwo(time){
 		console.log('tick2');
 		var decrement = function(){
@@ -235,12 +243,14 @@
 		return decrement;
 	}
 
+
 	function runTimerOne(){
 		var runTimer = tickTimerOne(RUNNING_TIME);
 		runTimer();
 		timerOneID = setInterval(runTimer, 1000);
 		clearInterval(timerTwoID);
 	}
+
 
 	function runTimerTwo(){
 		var runTimer = tickTimerTwo(RUNNING_TIME);
@@ -249,9 +259,12 @@
 		clearInterval(timerOneID);
 	}
 
-	/*
-	    удаляем из строки элемент с переданным индексом, возвращаем новую строку
-	 */
+
+	/**
+	 *
+	 * @param index - element to remove from string
+	 * @returns {string} new string
+     */
 	String.prototype.removeFrom = function (index) {
 		return this.substr(0, index) + this.substr(index + 1, this.length);
 	};
@@ -260,5 +273,5 @@
 
 
 
-//TODO:
-//выбор типа игры: с таймером или без
+// TODO:
+// select game type: with/without timer
