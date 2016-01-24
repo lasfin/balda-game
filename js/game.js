@@ -6,29 +6,30 @@
 (function(){
 	'use strict';
 
-	var inputField = document.getElementById('j-input-word'), // input with main word
-		startButton = document.getElementById('j-start'); // start button
-
-	// submit buttons
-	var buttonAddOne = document.getElementById('j-push-world-one'),
-		buttonAddTwo = document.getElementById('j-push-world-two');
-
-	// progress bars
-	var progressOne = document.getElementById('progressOne'),
-		progressTwo = document.getElementById('progressTwo');
-
-	// html nodes with words
-	var textFieldOne = document.getElementById('j-arr-one'),
-		textFieldTwo = document.getElementById('j-arr-two');
-
-	// timer nodes
-	var timerOne = document.getElementById('j-time-one'),
-		timerTwo = document.getElementById('j-time-two');
+	var move = {
+		inputField: document.getElementById('j-input-word'), // input with main word
+		startButton: document.getElementById('j-start'), // start button
+		// submit buttons
+		buttonAddOne: document.getElementById('j-push-world-one'),
+		buttonAddTwo: document.getElementById('j-push-world-two'),
+		// progress bars
+		progressOne: document.getElementById('j-progressOne'),
+		progressTwo: document.getElementById('j-progressTwo'),
+		// html nodes with words
+	 	textFieldOne: document.getElementById('j-arr-one'),
+		textFieldTwo: document.getElementById('j-arr-two'),
+		// timer nodes
+		timerOne: document.getElementById('j-time-one'),
+		timerTwo: document.getElementById('j-time-two'),
+		// inputs with text
+		inputOne: document.getElementById('j-input-one'),
+		inputTwo: document.getElementById('j-input-two')
+	};
 
 	// object with game state
 	var gameState = {
 		MIN_WORLD_WIDTH: 6,
-		RUNNING_TIME: 30000,
+		RUNNING_TIME: 40000,
 		timerOneID: 0,
 		timerTwoID: 0,
 		firstPlayerWords: [],
@@ -36,46 +37,45 @@
 	};
 
 
-	inputField.addEventListener('keyup', activateButton, false);
-	startButton.addEventListener('click', startGame, false);
+	DOMNodes.inputField.addEventListener('keyup', activateButton, false);
+	DOMNodes.startButton.addEventListener('click', startGame, false);
+	DOMNodes.buttonAddOne.addEventListener('click', addOne, false);
+	DOMNodes.buttonAddTwo.addEventListener('click', addTwo, false);
 
-	buttonAddOne.addEventListener('click', addOne, false);
-	buttonAddTwo.addEventListener('click', addTwo, false);
-
-	initTimer(timerOne, gameState.RUNNING_TIME);
-	initTimer(timerTwo, gameState.RUNNING_TIME);
+	initTimer(DOMNodes.timerOne, gameState.RUNNING_TIME);
+	initTimer(DOMNodes.timerTwo, gameState.RUNNING_TIME);
 
 
 	// activate start game button
 	function activateButton(){
-		var currentLength = inputField.value.length;
+		var currentLength = DOMNodes.inputField.value.length;
 
 		// if word length in input more then minimal - make button active
 		if (currentLength >= gameState.MIN_WORLD_WIDTH) {
-			if( !/^[a-zA-Zа-яА-я]+$/.test(inputField.value) ) {
+			if( !/^[a-zA-Zа-яА-я]+$/.test(DOMNodes.inputField.value) ) {
 				alert('Допустимы только буквы');
-				startButton.setAttribute('disabled', 'true');
+				DOMNodes.startButton.setAttribute('disabled', 'true');
 				return false;
 			}
 			else {
-				startButton.removeAttribute('disabled');
+				DOMNodes.startButton.removeAttribute('disabled');
 			}
 		}
 		// id word length in input less that minimal - make button disable
 		if (currentLength < gameState.MIN_WORLD_WIDTH) {
-			startButton.setAttribute('disabled', 'true');
+			DOMNodes.startButton.setAttribute('disabled', 'true');
 		}
 
 	}
 
 
 	function startGame(){
-		inputField.setAttribute('readonly', 'true');
-		inputField.removeEventListener('keyup', activateButton, false);
-		startButton.setAttribute('disabled', 'true');
+		DOMNodes.inputField.setAttribute('readonly', 'true');
+		DOMNodes.inputField.removeEventListener('keyup', activateButton, false);
+		DOMNodes.startButton.setAttribute('disabled', 'true');
 
 		var currentWord = document.getElementById('j-current-world');
-		currentWord.innerHTML = inputField.value.trim();
+		currentWord.innerHTML = DOMNodes.inputField.value.trim();
 
 		showActions();// show block with inputs
 		runTimerOne();
@@ -91,14 +91,14 @@
 
 
 	function addOne(){
-		var word = document.getElementById('j-input-one').value.trim();
+		var word = DOMNodes.inputOne.value.trim();
 
-		if(verifyInput(word, inputField.value.trim())){
+		if(verifyInput(word, DOMNodes.inputField.value.trim())){
 
 			if (word.length === 0){ // skip turn
-				buttonAddTwo.removeAttribute('disabled');
-				buttonAddOne.setAttribute('disabled', 'true');
-				document.getElementById('j-input-two').focus();
+				DOMNodes.buttonAddTwo.removeAttribute('disabled');
+				DOMNodes.buttonAddOne.setAttribute('disabled', 'true');
+				DOMNodes.inputTwo.focus();
 				runTimerTwo();
 				return;
 			}
@@ -111,13 +111,12 @@
 			}
 
 			gameState.firstPlayerWords.push(word);
-			buttonAddTwo.removeAttribute('disabled');
-			document.getElementById('j-input-two').focus();
-			buttonAddOne.setAttribute('disabled', 'true');
-			textFieldOne.innerHTML += ' <span class="b-word">' + word + '</span>';
-
-			document.getElementById('j-input-one').value = '';
-			progressOne.style.width = '100%';
+			DOMNodes.buttonAddTwo.removeAttribute('disabled');
+			DOMNodes.inputTwo.focus();
+			DOMNodes.buttonAddOne.setAttribute('disabled', 'true');
+			DOMNodes.textFieldOne.innerHTML += ' <span class="b-word">' + word + '</span>';
+			DOMNodes.inputOne.value = '';
+			DOMNodes.progressOne.style.width = '100%';
 
 			var scoreNode = document.getElementById('j-score-one');
 			changeScore(scoreNode, word);
@@ -130,14 +129,14 @@
 
 	function addTwo(){
 
-		var word = document.getElementById('j-input-two').value.trim();
+		var word = DOMNodes.inputTwo.value.trim();
 
-		if(verifyInput(word, inputField.value.trim())){
+		if(verifyInput(word, DOMNodes.inputField.value.trim())){
 
 			if (word.length === 0){// skip turn
-				buttonAddOne.removeAttribute('disabled');
-				buttonAddTwo.setAttribute('disabled', 'true');
-				document.getElementById('j-input-one').focus();
+				DOMNodes.buttonAddOne.removeAttribute('disabled');
+				DOMNodes.buttonAddTwo.setAttribute('disabled', 'true');
+				DOMNodes.inputOne.focus();
 				runTimerOne();
 				return;
 			}
@@ -149,13 +148,12 @@
 			}
 
 			gameState.secondPlayerWords.push(word);
-			buttonAddOne.removeAttribute('disabled');
-			document.getElementById('j-input-one').focus();
-			buttonAddTwo.setAttribute('disabled', 'true');
-			textFieldTwo.innerHTML += ' <span class="b-word">' + word + '</span>';
-
-			document.getElementById('j-input-two').value = '';
-			progressTwo.style.width = '100%';
+			DOMNodes.buttonAddOne.removeAttribute('disabled');
+			DOMNodes.inputOne.focus();
+			DOMNodes.buttonAddTwo.setAttribute('disabled', 'true');
+			DOMNodes.textFieldTwo.innerHTML += ' <span class="b-word">' + word + '</span>';
+			DOMNodes.inputTwo.value = '';
+			DOMNodes.progressTwo.style.width = '100%';
 
 			var scoreNode = document.getElementById('j-score-two');
 			changeScore(scoreNode, word);
@@ -167,13 +165,11 @@
 
 
 	function verifyInput(word, bigword){
-		console.log('verify');
 		word = word.toLowerCase();
 		bigword = bigword.toLowerCase();
 
 		for (var i = 0; i < word.length; ++i){
 			if(bigword.indexOf(word[i])!==-1){
-				console.log('word[i]: ', word[i], 'bigword: ', bigword);
 				bigword = bigword.removeFrom(bigword.indexOf(word[i]));
 			}
 			else{
@@ -193,7 +189,6 @@
 
 	function initTimer(timerNode, time, progressNode){
 		if (!time){ //set default time
-			console.log('дотикал!');
 			time = gameState.RUNNING_TIME;
 			progressNode.style.width = '100%';
 		}
@@ -212,40 +207,36 @@
 
 
 	function tickTimerOne(time){
-		console.log('tick');
 		var decrement = function(){
 			time -= 1000;
 
-			console.log((time / gameState.RUNNING_TIME) * 100);
-			progressOne.style.width = time / gameState.RUNNING_TIME * 100 + '%';
+			DOMNodes.progressOne.style.width = time / gameState.RUNNING_TIME * 100 + '%';
 
 			if (time <= 0) {
 				runTimerTwo();
-				buttonAddTwo.removeAttribute('disabled');
-				document.getElementById('j-input-two').focus();
-				buttonAddOne.setAttribute('disabled', 'true');
+				DOMNodes.buttonAddTwo.removeAttribute('disabled');
+				DOMNodes.inputTwo.focus();
+				DOMNodes.buttonAddOne.setAttribute('disabled', 'true');
 			}
-			initTimer(timerOne, time, progressOne);
+			initTimer(DOMNodes.timerOne, time, DOMNodes.progressOne);
 		};
 		return decrement;
 	}
 
 
 	function tickTimerTwo(time){
-		console.log('tick2');
 		var decrement = function(){
 			time -= 1000;
 
-			console.log((time / gameState.RUNNING_TIME) * 100);
-			progressTwo.style.width = time / gameState.RUNNING_TIME * 100 + '%';
+			DOMNodes.progressTwo.style.width = time / gameState.RUNNING_TIME * 100 + '%';
 
 			if (time <= 0) {
 				runTimerOne();
-				buttonAddOne.removeAttribute('disabled');
-				document.getElementById('j-input-one').focus();
-				buttonAddTwo.setAttribute('disabled', 'true');
+				DOMNodes.buttonAddOne.removeAttribute('disabled');
+				DOMNodes.inputOne.focus();
+				DOMNodes.buttonAddTwo.setAttribute('disabled', 'true');
 			}
-			initTimer(timerTwo, time, progressTwo);
+			initTimer(DOMNodes.timerTwo, time, DOMNodes.progressTwo);
 		};
 		return decrement;
 	}
