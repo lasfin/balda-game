@@ -6,7 +6,7 @@
 (function(){
 	'use strict';
 
-	var move = {
+	var DOMNodes = {
 		inputField: document.getElementById('j-input-word'), // input with main word
 		startButton: document.getElementById('j-start'), // start button
 		// submit buttons
