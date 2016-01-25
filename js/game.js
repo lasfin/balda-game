@@ -23,7 +23,12 @@
 		timerTwo: document.getElementById('j-time-two'),
 		// inputs with text
 		inputOne: document.getElementById('j-input-one'),
-		inputTwo: document.getElementById('j-input-two')
+		inputTwo: document.getElementById('j-input-two'),
+
+		scoreOne: document.getElementById('j-score-one'),
+		scoreTwo: document.getElementById('j-score-two'),
+
+		currentWord: document.getElementById('j-current-world')
 	};
 
 	// object with game state
@@ -73,20 +78,16 @@
 		DOMNodes.inputField.setAttribute('readonly', 'true');
 		DOMNodes.inputField.removeEventListener('keyup', activateButton, false);
 		DOMNodes.startButton.setAttribute('disabled', 'true');
-
-		var currentWord = document.getElementById('j-current-world');
-		currentWord.innerHTML = DOMNodes.inputField.value.trim();
+		DOMNodes.currentWord.innerHTML = DOMNodes.inputField.value.trim();
 
 		showActions();// show block with inputs
 		runTimerOne();
-
 	}
 
 
 	// show block with inputs and add buttons
 	function showActions() {
-		var actionsBlock = document.getElementById('j-actions');
-		actionsBlock.style.opacity = 1;
+		document.getElementById('j-actions').style.opacity = 1;
 	}
 
 
@@ -96,31 +97,16 @@
 		if(verifyInput(word, DOMNodes.inputField.value.trim())){
 
 			if (word.length === 0){ // skip turn
-				DOMNodes.buttonAddTwo.removeAttribute('disabled');
-				DOMNodes.buttonAddOne.setAttribute('disabled', 'true');
-				DOMNodes.inputTwo.focus();
+				switchButtonsAttrs(DOMNodes.buttonAddOne, DOMNodes.buttonAddTwo, DOMNodes.inputTwo);
 				runTimerTwo();
 				return;
 			}
 
-			// if word was used already - return
-			if (!(gameState.firstPlayerWords.indexOf(word) === -1 &&
-				gameState.secondPlayerWords.indexOf(word) === -1))
-			{
-				return;
-			}
+			if (wordAlreadyUsed(word)) { return; }
 
-			gameState.firstPlayerWords.push(word);
-			DOMNodes.buttonAddTwo.removeAttribute('disabled');
-			DOMNodes.inputTwo.focus();
-			DOMNodes.buttonAddOne.setAttribute('disabled', 'true');
-			DOMNodes.textFieldOne.innerHTML += ' <span class="b-word">' + word + '</span>';
-			DOMNodes.inputOne.value = '';
-			DOMNodes.progressOne.style.width = '100%';
-
-			var scoreNode = document.getElementById('j-score-one');
-			changeScore(scoreNode, word);
-
+			switchButtonsAttrs(DOMNodes.buttonAddOne, DOMNodes.buttonAddTwo, DOMNodes.inputTwo);
+			addWordToState(word, DOMNodes.textFieldOne, DOMNodes.inputOne, DOMNodes.progressOne);
+			changeScore(DOMNodes.scoreOne, word);
 			runTimerTwo();
 		}
 
@@ -128,49 +114,54 @@
 
 
 	function addTwo(){
-
 		var word = DOMNodes.inputTwo.value.trim();
 
 		if(verifyInput(word, DOMNodes.inputField.value.trim())){
 
 			if (word.length === 0){// skip turn
-				DOMNodes.buttonAddOne.removeAttribute('disabled');
-				DOMNodes.buttonAddTwo.setAttribute('disabled', 'true');
-				DOMNodes.inputOne.focus();
+				switchButtonsAttrs(DOMNodes.buttonAddTwo, DOMNodes.buttonAddOne, DOMNodes.inputOne);
 				runTimerOne();
 				return;
 			}
 
-			// if word was used already - return
-			if (!(gameState.firstPlayerWords.indexOf(word) === -1 &&
-				gameState.secondPlayerWords.indexOf(word) === -1)){
-				return;
-			}
+			if (wordAlreadyUsed(word)) { return; }
 
-			gameState.secondPlayerWords.push(word);
-			DOMNodes.buttonAddOne.removeAttribute('disabled');
-			DOMNodes.inputOne.focus();
-			DOMNodes.buttonAddTwo.setAttribute('disabled', 'true');
-			DOMNodes.textFieldTwo.innerHTML += ' <span class="b-word">' + word + '</span>';
-			DOMNodes.inputTwo.value = '';
-			DOMNodes.progressTwo.style.width = '100%';
-
-			var scoreNode = document.getElementById('j-score-two');
-			changeScore(scoreNode, word);
-
+			switchButtonsAttrs(DOMNodes.buttonAddTwo, DOMNodes.buttonAddOne, DOMNodes.inputOne);
+			addWordToState(word, DOMNodes.textFieldTwo, DOMNodes.inputTwo, DOMNodes.progressTwo);
+			changeScore(DOMNodes.scoreTwo, word);
 			runTimerOne();
 		}
 
 	}
 
 
-	function verifyInput(word, bigword){
+	function addWordToState(word, textFieldToAdd, inputToClear, progressToFill) {
+		gameState.secondPlayerWords.push(word);
+		textFieldToAdd.innerHTML += ' <span class="b-word">' + word + '</span>';
+		inputToClear.value = '';
+		progressToFill.style.width = '100%';
+	}
+
+
+	function switchButtonsAttrs(button, newActiveButton, inputToFocus) {
+		button.setAttribute('disabled', 'true');
+		newActiveButton.removeAttribute('disabled');
+		inputToFocus.focus();
+	}
+
+
+	function wordAlreadyUsed(word) {
+		return (!(gameState.firstPlayerWords.indexOf(word) === -1 && gameState.secondPlayerWords.indexOf(word) === -1));
+	}
+
+
+	function verifyInput(word, bigWord){
 		word = word.toLowerCase();
-		bigword = bigword.toLowerCase();
+		bigWord = bigWord.toLowerCase();
 
 		for (var i = 0; i < word.length; ++i){
 			if(bigword.indexOf(word[i])!==-1){
-				bigword = bigword.removeFrom(bigword.indexOf(word[i]));
+				bigWord = bigWord.removeFrom(bigWord.indexOf(word[i]));
 			}
 			else{
 				return false;
@@ -181,7 +172,7 @@
 
 
 	function changeScore(htmlNode, word){
-		var score = parseInt(htmlNode.innerHTML);
+		var score = parseInt(htmlNode.innerHTML, 10);
 		score += word.length;
 		htmlNode.innerHTML = score;
 	}
@@ -207,38 +198,32 @@
 
 
 	function tickTimerOne(time){
-		var decrement = function(){
+		return function(){
 			time -= 1000;
 
 			DOMNodes.progressOne.style.width = time / gameState.RUNNING_TIME * 100 + '%';
 
 			if (time <= 0) {
 				runTimerTwo();
-				DOMNodes.buttonAddTwo.removeAttribute('disabled');
-				DOMNodes.inputTwo.focus();
-				DOMNodes.buttonAddOne.setAttribute('disabled', 'true');
+				switchButtonsAttrs(DOMNodes.buttonAddOne, DOMNodes.buttonAddTwo, DOMNodes.inputTwo);
 			}
 			initTimer(DOMNodes.timerOne, time, DOMNodes.progressOne);
 		};
-		return decrement;
 	}
 
 
 	function tickTimerTwo(time){
-		var decrement = function(){
+		return function(){
 			time -= 1000;
 
 			DOMNodes.progressTwo.style.width = time / gameState.RUNNING_TIME * 100 + '%';
 
 			if (time <= 0) {
 				runTimerOne();
-				DOMNodes.buttonAddOne.removeAttribute('disabled');
-				DOMNodes.inputOne.focus();
-				DOMNodes.buttonAddTwo.setAttribute('disabled', 'true');
+				switchButtonsAttrs(DOMNodes.buttonAddTwo, DOMNodes.buttonAddOne, DOMNodes.inputOne);
 			}
 			initTimer(DOMNodes.timerTwo, time, DOMNodes.progressTwo);
 		};
-		return decrement;
 	}
 
 
@@ -268,7 +253,6 @@
 	};
 
 }());
-
 
 
 // TODO:
