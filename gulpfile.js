@@ -17,7 +17,7 @@ gulp.task('compress-js', () => {
 });
 
 
-gulp.task('lint', function () {
+gulp.task('lint', () => {
     return gulp.src(['js/**/*.js'])
         .pipe(eslint({
             extends: 'eslint:recommended',
