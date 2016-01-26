@@ -3,166 +3,165 @@
  * @date 08.10.2014
  */
 
-(function(){//весь код в немедленно выполняемой функции, чтобы не засорять глобальную область видимости
+(function(){
 	'use strict';
 
-	var MIN_WORLD_WIDTH = 6,
-		RUNNING_TIME = 30000,
-		inputField = document.getElementById('j-input-word'),//инпут со словом
-		startButton = document.getElementById('j-start'); //кнопка старта
+	var DOMNodes = {
+		inputField: document.getElementById('j-input-word'), // input with main word
+		startButton: document.getElementById('j-start'), // start button
+		// submit buttons
+		buttonAddOne: document.getElementById('j-push-world-one'),
+		buttonAddTwo: document.getElementById('j-push-world-two'),
+		// progress bars
+		progressOne: document.getElementById('j-progressOne'),
+		progressTwo: document.getElementById('j-progressTwo'),
+		// html nodes with words
+		textFieldOne: document.getElementById('j-arr-one'),
+		textFieldTwo: document.getElementById('j-arr-two'),
+		// timer nodes
+		timerOne: document.getElementById('j-time-one'),
+		timerTwo: document.getElementById('j-time-two'),
+		// inputs with text
+		inputOne: document.getElementById('j-input-one'),
+		inputTwo: document.getElementById('j-input-two'),
 
-	//кнопки добавления слов
-	var buttonAddOne = document.getElementById('j-push-world-one'),
-		buttonAddTwo = document.getElementById('j-push-world-two');
+		scoreOne: document.getElementById('j-score-one'),
+		scoreTwo: document.getElementById('j-score-two'),
 
-	//прогресс бары
-	var progressOne = document.getElementById('progressOne'),
-		progressTwo = document.getElementById('progressTwo');
+		currentWord: document.getElementById('j-current-world')
+	};
 
-	//html блоки с уже заполненными полями
-	var textFieldOne = document.getElementById('j-arr-one'),
-		textFieldTwo = document.getElementById('j-arr-two');
-
-	//массивы с отгаданными словами
-	var arrOne = [],
-		arrTwo = [];
-
-
-	inputField.addEventListener('keyup', activateButton, false);
-	startButton.addEventListener('click', startGame, false);
-
-	buttonAddOne.addEventListener('click', addOne, false);
-	buttonAddTwo.addEventListener('click', addTwo, false);
+	// object with game state
+	var gameState = {
+		MIN_WORLD_WIDTH: 6,
+		RUNNING_TIME: 40000,
+		timerOneID: 0,
+		timerTwoID: 0,
+		firstPlayerWords: [],
+		secondPlayerWords: []
+	};
 
 
-	var timerOne = document.getElementById('j-time-one'),
-		timerTwo = document.getElementById('j-time-two');
+	DOMNodes.inputField.addEventListener('keyup', activateButton, false);
+	DOMNodes.startButton.addEventListener('click', startGame, false);
+	DOMNodes.buttonAddOne.addEventListener('click', addOne, false);
+	DOMNodes.buttonAddTwo.addEventListener('click', addTwo, false);
 
-	initTimer(timerOne, RUNNING_TIME);
-	initTimer(timerTwo, RUNNING_TIME);
+	initTimer(DOMNodes.timerOne, gameState.RUNNING_TIME);
+	initTimer(DOMNodes.timerTwo, gameState.RUNNING_TIME);
 
-	var timerOneID, timerTwoID;
 
-	function startGame(){
-		inputField.setAttribute('readonly', 'true');//делаем инпут нередактируемым
-		inputField.removeEventListener('keyup', activateButton, false);
-		startButton.setAttribute('disabled', 'true');//делаем кнопку неактивной
+	// activate start game button
+	function activateButton() {
+		var currentLength = DOMNodes.inputField.value.length;
 
-		var currentWord = document.getElementById('j-current-world');//показываем слово в нашей псевдо таблице
-		currentWord.innerHTML = inputField.value.trim();
-
-		showActions();//показываем блок с инпутами добавления слов
-		runTimerOne();
-
-	}
-
-	//активация кнопки, начинающей игру
-	function activateButton(){
-		var currentLength = inputField.value.length;
-
-		//если длина слова в инпуте больше минимальной - делаем активной кнопку
-		if (currentLength >= MIN_WORLD_WIDTH) {
-			if( !/^[a-zA-Zа-яА-я]+$/.test(inputField.value) ) {
+		// if word length in input more then minimal - make button active
+		if (currentLength >= gameState.MIN_WORLD_WIDTH) {
+			if( !/^[a-zA-Zа-яА-я]+$/.test(DOMNodes.inputField.value) ) {
 				alert('Допустимы только буквы');
-				startButton.setAttribute('disabled', 'true');
+				DOMNodes.startButton.setAttribute('disabled', 'true');
 				return false;
 			}
 			else {
-				startButton.removeAttribute('disabled');
+				DOMNodes.startButton.removeAttribute('disabled');
 			}
 		}
-		//если длина слова в инпуте больше минимальной - делаем кнопку неактивной
-		if (currentLength < MIN_WORLD_WIDTH) {
-			startButton.setAttribute('disabled', 'true');
+		// id word length in input less that minimal - make button disable
+		if (currentLength < gameState.MIN_WORLD_WIDTH) {
+			DOMNodes.startButton.setAttribute('disabled', 'true');
 		}
 
 	}
 
-	//показываем блок с инпутами и кнопками добавления слов
-	function showActions() {
-		var actionsBlock = document.getElementById('j-actions');
-		actionsBlock.style.opacity = 1;
+
+	function startGame() {
+		DOMNodes.inputField.setAttribute('readonly', 'true');
+		DOMNodes.inputField.removeEventListener('keyup', activateButton, false);
+		DOMNodes.startButton.setAttribute('disabled', 'true');
+		DOMNodes.currentWord.innerHTML = DOMNodes.inputField.value.trim();
+
+		showActions();// show block with inputs
+		runTimerOne();
 	}
 
 
-	function addOne(){
-		var word = document.getElementById('j-input-one').value.trim();
+	// show block with inputs and add buttons
+	function showActions() {
+		document.getElementById('j-actions').style.opacity = 1;
+	}
 
-		if(verifyInput(word, inputField.value.trim())){
 
-			if (word.length === 0){//пропуск хода
-				buttonAddTwo.removeAttribute('disabled');
-				buttonAddOne.setAttribute('disabled', 'true');
-				document.getElementById('j-input-two').focus();
+	function addOne() {
+		var word = DOMNodes.inputOne.value.trim();
+
+		if(verifyInput(word, DOMNodes.inputField.value.trim())) {
+
+			if (word.length === 0){ // skip turn
+				switchButtonsAttrs(DOMNodes.buttonAddOne, DOMNodes.buttonAddTwo, DOMNodes.inputTwo);
 				runTimerTwo();
 				return;
 			}
 
-			if (!(arrOne.indexOf(word) === -1 && arrTwo.indexOf(word) === -1)){//если в одном из массивов есть совпадение, возвращаем
-				return;
-			}
+			if (wordAlreadyUsed(word)) { return; }
 
-			arrOne.push(word);
-			buttonAddTwo.removeAttribute('disabled');
-			document.getElementById('j-input-two').focus();
-			buttonAddOne.setAttribute('disabled', 'true');
-			textFieldOne.innerHTML += ' <span class="b-word">' + word + '</span>';
-
-			document.getElementById('j-input-one').value = '';
-			progressOne.style.width = '100%';
-
-			var scoreNode = document.getElementById('j-score-one');
-			changeScore(scoreNode, word);
-
+			switchButtonsAttrs(DOMNodes.buttonAddOne, DOMNodes.buttonAddTwo, DOMNodes.inputTwo);
+			addWordToState(word, DOMNodes.textFieldOne, DOMNodes.inputOne, DOMNodes.progressOne);
+			changeScore(DOMNodes.scoreOne, word);
 			runTimerTwo();
 		}
 
 	}
 
-	function addTwo(){
 
-		var word = document.getElementById('j-input-two').value.trim();
+	function addTwo() {
+		var word = DOMNodes.inputTwo.value.trim();
 
-		if(verifyInput(word, inputField.value.trim())){
+		if(verifyInput(word, DOMNodes.inputField.value.trim())) {
 
-			if (word.length === 0){//пропуск хода
-				buttonAddOne.removeAttribute('disabled');
-				buttonAddTwo.setAttribute('disabled', 'true');
-				document.getElementById('j-input-one').focus();
+			if (word.length === 0){// skip turn
+				switchButtonsAttrs(DOMNodes.buttonAddTwo, DOMNodes.buttonAddOne, DOMNodes.inputOne);
 				runTimerOne();
 				return;
 			}
 
-			if (!(arrOne.indexOf(word) === -1 && arrTwo.indexOf(word) === -1)){//если в одном из массивов есть совпадение, возвращаем
-				return;
-			}
+			if (wordAlreadyUsed(word)) { return; }
 
-			arrTwo.push(word);
-			buttonAddOne.removeAttribute('disabled');
-			document.getElementById('j-input-one').focus();
-			buttonAddTwo.setAttribute('disabled', 'true');
-			textFieldTwo.innerHTML += ' <span class="b-word">' + word + '</span>';
-
-			document.getElementById('j-input-two').value = '';
-			progressTwo.style.width = '100%';
-
-			var scoreNode = document.getElementById('j-score-two');
-			changeScore(scoreNode, word);
-
+			switchButtonsAttrs(DOMNodes.buttonAddTwo, DOMNodes.buttonAddOne, DOMNodes.inputOne);
+			addWordToState(word, DOMNodes.textFieldTwo, DOMNodes.inputTwo, DOMNodes.progressTwo);
+			changeScore(DOMNodes.scoreTwo, word);
 			runTimerOne();
 		}
 
 	}
 
-	function verifyInput(word, bigword){
-		console.log('verify');
-		word = word.toLowerCase();
-		bigword = bigword.toLowerCase();
 
-		for (var i = 0; i < word.length; ++i){
-			if(bigword.indexOf(word[i])!==-1){
-				console.log('word[i]: ', word[i], 'bigword: ', bigword);
-				bigword = bigword.removeFrom(bigword.indexOf(word[i]));
+	function addWordToState(word, textFieldToAdd, inputToClear, progressToFill) {
+		gameState.secondPlayerWords.push(word);
+		textFieldToAdd.innerHTML += ' <span class="b-word">' + word + '</span>';
+		inputToClear.value = '';
+		progressToFill.style.width = '100%';
+	}
+
+
+	function switchButtonsAttrs(button, newActiveButton, inputToFocus) {
+		button.setAttribute('disabled', 'true');
+		newActiveButton.removeAttribute('disabled');
+		inputToFocus.focus();
+	}
+
+
+	function wordAlreadyUsed(word) {
+		return (!(gameState.firstPlayerWords.indexOf(word) === -1 && gameState.secondPlayerWords.indexOf(word) === -1));
+	}
+
+
+	function verifyInput(word, bigWord) {
+		word = word.toLowerCase();
+		bigWord = bigWord.toLowerCase();
+
+		for (var i = 0; i < word.length; ++i) {
+			if(bigWord.indexOf(word[i])!==-1) {
+				bigWord = bigWord.removeFrom(bigWord.indexOf(word[i]));
 			}
 			else{
 				return false;
@@ -171,16 +170,17 @@
 		return true;
 	}
 
-	function changeScore(htmlNode, word){
-		var score = parseInt(htmlNode.innerHTML);
+
+	function changeScore(htmlNode, word) {
+		var score = parseInt(htmlNode.innerHTML, 10);
 		score += word.length;
 		htmlNode.innerHTML = score;
 	}
 
-	function initTimer(timerNode, time, progressNode){
-		if (!time){ //выставляем начальное время, когда таймер дотикает
-			console.log('дотикал!');
-			time = RUNNING_TIME;
+
+	function initTimer(timerNode, time, progressNode) {
+		if (!time){ //set default time
+			time = gameState.RUNNING_TIME;
 			progressNode.style.width = '100%';
 		}
 		time = new Date(time).getTime() / 1000;
@@ -197,61 +197,57 @@
 	}
 
 
-	function tickTimerOne(time){
-		console.log('tick');
-		var decrement = function(){
+	function tickTimerOne(time) {
+		return function() {
 			time -= 1000;
 
-			console.log((time / RUNNING_TIME) * 100);
-			progressOne.style.width = time / RUNNING_TIME * 100 + '%';
+			DOMNodes.progressOne.style.width = time / gameState.RUNNING_TIME * 100 + '%';
 
 			if (time <= 0) {
 				runTimerTwo();
-				buttonAddTwo.removeAttribute('disabled');
-				document.getElementById('j-input-two').focus();
-				buttonAddOne.setAttribute('disabled', 'true');
+				switchButtonsAttrs(DOMNodes.buttonAddOne, DOMNodes.buttonAddTwo, DOMNodes.inputTwo);
 			}
-			initTimer(timerOne, time, progressOne);
+			initTimer(DOMNodes.timerOne, time, DOMNodes.progressOne);
 		};
-		return decrement;
 	}
 
-	function tickTimerTwo(time){
-		console.log('tick2');
-		var decrement = function(){
+
+	function tickTimerTwo(time) {
+		return function() {
 			time -= 1000;
 
-			console.log((time / RUNNING_TIME) * 100);
-			progressTwo.style.width = time / RUNNING_TIME * 100 + '%';
+			DOMNodes.progressTwo.style.width = time / gameState.RUNNING_TIME * 100 + '%';
 
 			if (time <= 0) {
 				runTimerOne();
-				buttonAddOne.removeAttribute('disabled');
-				document.getElementById('j-input-one').focus();
-				buttonAddTwo.setAttribute('disabled', 'true');
+				switchButtonsAttrs(DOMNodes.buttonAddTwo, DOMNodes.buttonAddOne, DOMNodes.inputOne);
 			}
-			initTimer(timerTwo, time, progressTwo);
+			initTimer(DOMNodes.timerTwo, time, DOMNodes.progressTwo)
 		};
-		return decrement;
 	}
 
-	function runTimerOne(){
-		var runTimer = tickTimerOne(RUNNING_TIME);
+
+	function runTimerOne() {
+		var runTimer = tickTimerOne(gameState.RUNNING_TIME);
 		runTimer();
-		timerOneID = setInterval(runTimer, 1000);
-		clearInterval(timerTwoID);
+		gameState.timerOneID = setInterval(runTimer, 1000);
+		clearInterval(gameState.timerTwoID);
 	}
 
-	function runTimerTwo(){
-		var runTimer = tickTimerTwo(RUNNING_TIME);
+
+	function runTimerTwo() {
+		var runTimer = tickTimerTwo(gameState.RUNNING_TIME);
 		runTimer();
-		timerTwoID = setInterval(runTimer, 1000);
-		clearInterval(timerOneID);
+		gameState.timerTwoID = setInterval(runTimer, 1000);
+		clearInterval(gameState.timerOneID);
 	}
 
-	/*
-	    удаляем из строки элемент с переданным индексом, возвращаем новую строку
-	 */
+
+	/**
+	 *
+	 * @param index - element to remove from string
+	 * @returns {string} new string
+     */
 	String.prototype.removeFrom = function (index) {
 		return this.substr(0, index) + this.substr(index + 1, this.length);
 	};
@@ -259,6 +255,5 @@
 }());
 
 
-
-//TODO:
-//выбор типа игры: с таймером или без
+// TODO:
+// select game type: with/without timer

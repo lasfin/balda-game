@@ -4,8 +4,8 @@
 	<meta charset="UTF-8">
 	<title>balda</title>
 	<link href='http://fonts.googleapis.com/css?family=Roboto+Condensed:300italic,400italic,700italic,400,700,300&subset=cyrillic-ext,latin' rel='stylesheet' type='text/css'>
-	<link rel="stylesheet" href="css/bootstrap.min.css">
-	<link rel="stylesheet" href="css/style.css"/>
+	<link rel="stylesheet" href="css/bootstrap.min.css"/>
+	<link rel="stylesheet" href="dist/style.min.css"/>
 	<link href="data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAABILAAASCwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAHARUCJwkyCDgQRQQtC0EADQIuAAAAGwAAAAcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAIABMDbwEyCsECUxLwEm8i/iF8L/8XdCb/AlsT+gA4C94AFgSkAAIAPQAAAAEAAAAAAAAAAAAAAAAAAAAAAAQALgciDf8PThz/FnAo/zaPQ/9HnVH/OJBD/xFvIf8ASQ7/ACQH/wAHAXoAAAABAAAAAAAAAAAAAAAAAAAAAAALAhYMLxP+GWIq/yqGPf9Rp17/aLpw/1WpX/8mgjb/BFQU/wApCP8ACAFfAAAAAAAAAAAAAAAAAAAAAAAAAAAAEQMCCzMT5yBuMv84lEz/Yrdv/4HRiP9muXD/NI5E/wtdHf8BLAn7AAMANQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAg1EagicTX/PZtU/2W9dv9/0Yr/Zrtz/zeSSf8PYCD/ASoJ2AAAABQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADMgxOGmcs/zuaU/9dt3H/bcN9/1qyav8xjkX/DVgd/wAjB4sAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAJAwxTG9AujUb/SaRe/0GCVv9AkVP/JIA4/wZHE+kADAIjAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACRhAwFGon8ho7Pv8RET//ERs3/w1aHvsBLgldAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALEBeBy1IYMYgKVv/NUeF/yo2bP8gM0rmBQcLTAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEVkkXNeiMb/NUWD/ztOk/8sOHb/XITD/zBFZbcAAAAVAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABWfbe4X3+x/2Z6n/9Za53/XGyP/158qf9Ka5zfAAAAJQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHCg7tpuCZP+rhVv/Rj44/72hff+Vb0b/FCAz4QAAAB4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALHYIYLlD/JUh8/xtKkf8pUY3/GDZj/wASLbgAAAAJAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGkETLlGF2k99wv9dlOf/UYHJ/zRYj+kAESszAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACZRkhJbg8B+Z5DOq1yBuYcvS3UfAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4AcAAMADAADAAwAAwAMAAMAHAADgBwAA4AcAAOAPAADwDwAA8A8AAPAPAADwDwAA8A8AAPAPAADwDwAA+B8AAA==" rel="icon" type="image/x-icon">
 </head>
 
@@ -48,7 +48,7 @@
 		<div class="col-xs-4">
 			<div id="j-time-one" class="time"></div>
 			<div class="progress">
-				<div class="progress-bar progress-bar-success" role="progressbar" id="progressOne" style="width: 100%;">
+				<div class="progress-bar progress-bar-success" role="progressbar" id="j-progressOne" style="width: 100%;">
 				</div>
 			</div>
 		</div>
@@ -56,7 +56,7 @@
 		<div class="col-xs-4 text-right">
 			<div id="j-time-two" class="time"></div>
 			<div class="progress">
-				<div class="progress-bar progress-bar-success" role="progressbar" id="progressTwo" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 100%;">
+				<div class="progress-bar progress-bar-success" role="progressbar" id="j-progressTwo" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 100%;">
 				</div>
 			</div>
 		</div>
@@ -89,8 +89,6 @@
 
 
 
-
-
-<script src="js/game.js"></script>
+<script src="dist/game.min.js"></script>
 </body>
 </html>
