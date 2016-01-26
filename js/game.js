@@ -16,7 +16,7 @@
 		progressOne: document.getElementById('j-progressOne'),
 		progressTwo: document.getElementById('j-progressTwo'),
 		// html nodes with words
-	 	textFieldOne: document.getElementById('j-arr-one'),
+		textFieldOne: document.getElementById('j-arr-one'),
 		textFieldTwo: document.getElementById('j-arr-two'),
 		// timer nodes
 		timerOne: document.getElementById('j-time-one'),
@@ -222,7 +222,7 @@
 				runTimerOne();
 				switchButtonsAttrs(DOMNodes.buttonAddTwo, DOMNodes.buttonAddOne, DOMNodes.inputOne);
 			}
-			initTimer(DOMNodes.timerTwo, time, DOMNodes.progressTwo);
+			initTimer(DOMNodes.timerTwo, time, DOMNodes.progressTwo)
 		};
 	}
 
