@@ -52,7 +52,7 @@
 
 
 	// activate start game button
-	function activateButton(){
+	function activateButton() {
 		var currentLength = DOMNodes.inputField.value.length;
 
 		// if word length in input more then minimal - make button active
@@ -74,7 +74,7 @@
 	}
 
 
-	function startGame(){
+	function startGame() {
 		DOMNodes.inputField.setAttribute('readonly', 'true');
 		DOMNodes.inputField.removeEventListener('keyup', activateButton, false);
 		DOMNodes.startButton.setAttribute('disabled', 'true');
@@ -91,10 +91,10 @@
 	}
 
 
-	function addOne(){
+	function addOne() {
 		var word = DOMNodes.inputOne.value.trim();
 
-		if(verifyInput(word, DOMNodes.inputField.value.trim())){
+		if(verifyInput(word, DOMNodes.inputField.value.trim())) {
 
 			if (word.length === 0){ // skip turn
 				switchButtonsAttrs(DOMNodes.buttonAddOne, DOMNodes.buttonAddTwo, DOMNodes.inputTwo);
@@ -113,10 +113,10 @@
 	}
 
 
-	function addTwo(){
+	function addTwo() {
 		var word = DOMNodes.inputTwo.value.trim();
 
-		if(verifyInput(word, DOMNodes.inputField.value.trim())){
+		if(verifyInput(word, DOMNodes.inputField.value.trim())) {
 
 			if (word.length === 0){// skip turn
 				switchButtonsAttrs(DOMNodes.buttonAddTwo, DOMNodes.buttonAddOne, DOMNodes.inputOne);
@@ -155,12 +155,12 @@
 	}
 
 
-	function verifyInput(word, bigWord){
+	function verifyInput(word, bigWord) {
 		word = word.toLowerCase();
 		bigWord = bigWord.toLowerCase();
 
-		for (var i = 0; i < word.length; ++i){
-			if(bigword.indexOf(word[i])!==-1){
+		for (var i = 0; i < word.length; ++i) {
+			if(bigWord.indexOf(word[i])!==-1) {
 				bigWord = bigWord.removeFrom(bigWord.indexOf(word[i]));
 			}
 			else{
@@ -171,14 +171,14 @@
 	}
 
 
-	function changeScore(htmlNode, word){
+	function changeScore(htmlNode, word) {
 		var score = parseInt(htmlNode.innerHTML, 10);
 		score += word.length;
 		htmlNode.innerHTML = score;
 	}
 
 
-	function initTimer(timerNode, time, progressNode){
+	function initTimer(timerNode, time, progressNode) {
 		if (!time){ //set default time
 			time = gameState.RUNNING_TIME;
 			progressNode.style.width = '100%';
@@ -197,8 +197,8 @@
 	}
 
 
-	function tickTimerOne(time){
-		return function(){
+	function tickTimerOne(time) {
+		return function() {
 			time -= 1000;
 
 			DOMNodes.progressOne.style.width = time / gameState.RUNNING_TIME * 100 + '%';
@@ -212,8 +212,8 @@
 	}
 
 
-	function tickTimerTwo(time){
-		return function(){
+	function tickTimerTwo(time) {
+		return function() {
 			time -= 1000;
 
 			DOMNodes.progressTwo.style.width = time / gameState.RUNNING_TIME * 100 + '%';
@@ -227,7 +227,7 @@
 	}
 
 
-	function runTimerOne(){
+	function runTimerOne() {
 		var runTimer = tickTimerOne(gameState.RUNNING_TIME);
 		runTimer();
 		gameState.timerOneID = setInterval(runTimer, 1000);
@@ -235,7 +235,7 @@
 	}
 
 
-	function runTimerTwo(){
+	function runTimerTwo() {
 		var runTimer = tickTimerTwo(gameState.RUNNING_TIME);
 		runTimer();
 		gameState.timerTwoID = setInterval(runTimer, 1000);
